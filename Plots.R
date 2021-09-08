@@ -23,17 +23,26 @@ USMA_EE_2021 <- read_xlsx("2021_EE_Growth_data_DF.xlsx",
 
 # Plot: growth profile with the bottlenecks
 data <- USMA_EE_2021[,c(1:6,9,10)]
+data <- data[grep("Yes", data$Selected),]
+
+data <- data %>% 
+  rowwise() %>% 
+  mutate (Time = case_when(CFU_mL > 0 ~ "3",cells_mL > 1000000 ~ "45"))
+
+
 data <- data %>% 
   pivot_longer(cols = c(CFU_mL,cells_mL ),
                names_to = "Cuantification",
-               values_to = c("Cellular_concentration"))
-data <- data[grep("Yes", data$Selected),]
+               values_to = c("Cellular_concentration")) # works
 
 data <- data %>% 
   mutate(Time = case_when(
     startsWith(Cuantification, "CFU") ~ "3",
-    startsWith(Cuantification, "cells") ~ "45"))
+    startsWith(Cuantification, "cells") ~ "45")) # works
 
+data <- data %>% 
+  mutate(Time = case_when(
+    Cellular_concentration < 1 ~ "0"))
 
 
 

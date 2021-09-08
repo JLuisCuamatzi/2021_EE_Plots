@@ -69,7 +69,7 @@ plot.1 <- ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
   geom_hline(yintercept = 1e5,linetype='dotted', col = 'blue') +
   geom_hline(yintercept = 1e7,linetype='dotted', col = 'orange') +
   scale_y_log10(labels = scientific) +
-  scale_x_continuous(limits = c(0,1000)) +
+  scale_x_continuous(limits = c(0,1000), breaks = seq(0,1000,48)) +
   geom_point(data = data, aes(x = cumulative_time, y = Cellular_concentration,color = Cuantification))+
   facet_grid(Rep~.) +
   theme_classic()+
@@ -92,6 +92,7 @@ rm(list = ls(pattern = ".temp"))
 
 ggsave("EE_Plot_01_Growth_profile.png", plot = plot.1, dpi = 300, width = 13, height = 9)
 
+## Now, do plots for each evolutionary group (Control and H2O2)
 
 
 

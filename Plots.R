@@ -69,8 +69,7 @@ ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
   geom_hline(yintercept = 1e5,linetype='dotted', col = 'blue') +
   geom_hline(yintercept = 1e7,linetype='dotted', col = 'orange') +
   scale_y_log10(labels = scientific) +
-  geom_point(data = data, aes(x = cumulative_time, y = Cellular_concentration,
-                              color = Cuantification))+
+  geom_point(data = data, aes(x = cumulative_time, y = Cellular_concentration,color = Cuantification))+
   facet_grid(Rep~.) +
   theme_classic()+
   geom_point(data = df.2.temp, aes(x = Time, y = Cellular_concentration))+
@@ -85,21 +84,17 @@ ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
                                     size = 18),
         axis.text.x = element_text(face = "bold",
                                    size = 14),
-        axis.text.y = element_text(face = "bold",,
+        axis.text.y = element_text(face = "bold",
                                    size = 14)) # works
+rm(list = ls(pattern = ".temp"))
 
 
 
-# data a
-ggplot(data.a, aes(x = cumulative_time, y = Cellular_concentration)) +
-  geom_line() + 
-  #geom_hline(yintercept = 1e6,linetype='dotted', col = 'red')+
-  geom_hline(yintercept = 1e4,linetype='dotted', col = 'blue')+
-  geom_hline(yintercept = 1e7,linetype='dotted', col = 'orange')+
-  #scale_y_log10() +
-  scale_y_log10(labels = scientific)+
-  #scale_y_continuous(labels = scientific)+
-  geom_point(data = data.a, aes(x = cumulative_time, y = Cellular_concentration,
-                              color = Cuantification))+
-  geom_point(data = df.2.temp, aes(x = Time, y = Cellular_concentration))+
-  theme_classic()
+
+
+
+
+
+
+
+

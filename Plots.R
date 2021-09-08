@@ -19,16 +19,11 @@ library(grid, warn.conflicts = F)
 # reading the dataframe
 
 USMA_EE_2021 <- read_xlsx("2021_EE_Growth_data_DF.xlsx",
-                          range = "EE_Dataframe!A1:N394")
+                          range = "EE_Dataframe!A1:M376")
 
 # Plot: growth profile with the bottlenecks
-data <- USMA_EE_2021[,c(1:6,9,10)]
+data <- USMA_EE_2021[,c(1:5,8,9)]
 data <- data[grep("Yes", data$Selected),]
-
-data <- data %>% 
-  rowwise() %>% 
-  mutate (Time = case_when(CFU_mL > 0 ~ "3",cells_mL > 1000000 ~ "45"))
-
 
 data <- data %>% 
   pivot_longer(cols = c(CFU_mL,cells_mL ),
@@ -40,10 +35,15 @@ data <- data %>%
     startsWith(Cuantification, "CFU") ~ "3",
     startsWith(Cuantification, "cells") ~ "45")) # works
 
-data <- data %>% 
-  mutate(Time = case_when(
-    Cellular_concentration < 1 ~ "0"))
-
-
+df.temp <- data.frame(Condition = c(rep("Control",6),rep("H2O2",6)),
+                      TreatmentNum = c("Treatment 01","Treatment 01"),
+                      H2O2 = c(rep("w/o ROS 0 mM",6), rep("5 mM",6)),
+                      Selected = c("Yes","Yes"),
+                      Rep = c(rep("D",2), rep("E",2),rep("F",2),
+                              rep("A",2), rep("B",2),rep("C",2)),
+                      Cuantification = c("CFU_mL","cells_mL"),
+                      Cellular_concentration = c(0,1000000),
+                      Time = c(rep("0",12))) # works
+data <- bind_rows(data, df.temp) #works
 
 

@@ -75,12 +75,12 @@ plot.1 <- ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
   scale_x_continuous(limits = c(0,970), breaks = seq(0,970,48)) +
   geom_point(data = data, aes(x = cumulative_time, y = Cellular_concentration,color = Cuantification))+
   facet_grid(Rep~.) +
-  theme_classic()+
   geom_point(data = df.2.temp, aes(x = Time, y = Cellular_concentration))+
   labs(y = "cells/mL", x = "Time (h)") + 
+  theme_classic() +
   theme(legend.position = "none",
-        #strip.text = element_text(face = "bold", size=15),
-        #strip.background = element_rect(colour="black",fill="ivory"),
+        strip.text = element_text(face = "bold", size=15),
+        strip.background = element_rect(colour="black",fill="ivory"),
         axis.title.x = element_text(face = "bold",
                                     size = 18),
         axis.title.y = element_text(face = "bold",

@@ -63,7 +63,7 @@ scientific <- function(x){
          parse(text=gsub("[+]", "",gsub("e", " %*% 10^", scientific_format()(x)))))
 } # works
 
-ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
+plot.1 <- ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
   geom_line() + 
   geom_hline(yintercept = 1e6,linetype='dotted', col = 'red')+
   geom_hline(yintercept = 1e5,linetype='dotted', col = 'blue') +
@@ -86,8 +86,10 @@ ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
                                    size = 14),
         axis.text.y = element_text(face = "bold",
                                    size = 14)) # works
+plot.1 
 rm(list = ls(pattern = ".temp"))
 
+ggsave("EE_Plot_01_Growth_profile.png", plot = plot.1, dpi = 300, width = 13, height = 9)
 
 
 

@@ -1,0 +1,13 @@
+## 2021-09-08
+
+Importante
+
+para git
+
+$ git init
+
+$ git remote add origin https://github.com/JLuisCuamatzi/2021_EE_Plots.git
+
+$ git branch -M main
+
+$ git push -u origin main

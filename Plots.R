@@ -46,9 +46,9 @@ df.temp <- data.frame(Condition = c(rep("Control",3),rep("H2O2",3)),
 
 data <- bind_rows(df.temp,data)
 
-df.2.temp <- data.frame(Condition = c(rep("Control",21),rep("H2O2",21)),
+df.2.temp <- data.frame(Condition = c(rep("Control",20),rep("H2O2",20)),
                         #TreatmentNum = c(paste(rep("Treatment 0",42), seq(0,20,1), sep ="")),
-                        Time = c(rep(seq(1,961,48),2)),
+                        Time = c(rep(seq(1,913,48),2)),
                         Cellular_concentration = c(1000000))
 
 data <- data %>% 
@@ -69,6 +69,7 @@ plot.1 <- ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
   geom_hline(yintercept = 1e5,linetype='dotted', col = 'blue') +
   geom_hline(yintercept = 1e7,linetype='dotted', col = 'orange') +
   scale_y_log10(labels = scientific) +
+  scale_x_continuous(limits = c(0,1000)) +
   geom_point(data = data, aes(x = cumulative_time, y = Cellular_concentration,color = Cuantification))+
   facet_grid(Rep~.) +
   theme_classic()+

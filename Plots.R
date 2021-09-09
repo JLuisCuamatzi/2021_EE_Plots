@@ -108,7 +108,7 @@ ggsave("EE_Plot_01_Growth_profile.png", plot = plot.1, dpi = 300, width = 13, he
 ## Now, do plots for each evolutionary group (Control and H2O2)
 
 data.control <- data[grep("Control",data$Condition),]
-data.h2o2 <- data[grep("H2O2",data$Condition),]
+data.H2O2 <- data[grep("H2O2",data$Condition),]
 
 plot.control <- ggplot(data.control, aes(x = cumulative_time, y = Cellular_concentration)) +
   geom_line() + 
@@ -117,10 +117,9 @@ plot.control <- ggplot(data.control, aes(x = cumulative_time, y = Cellular_conce
   geom_hline(yintercept = 1e7,linetype='dotted', col = 'orange') +
   scale_y_log10(labels = scientific) +
   scale_x_continuous(limits = c(0,1000), breaks = seq(0,1000,48)) +
-  geom_point(data = data, aes(x = cumulative_time, y = Cellular_concentration,color = Cuantification))+
+  geom_point(aes(x = cumulative_time, y = Cellular_concentration,color = Cuantification))+
   facet_grid(Rep~.) +
   theme_classic()+
-  geom_point(data = df.2.temp, aes(x = Time, y = Cellular_concentration))+
   labs(y = "cells/mL", x = "Time (h)") + 
   theme(legend.position = "none",
         strip.text = element_text(face = "bold", size=15),
@@ -135,6 +134,34 @@ plot.control <- ggplot(data.control, aes(x = cumulative_time, y = Cellular_conce
         axis.text.y = element_text(face = "bold",
                                    size = 14))
 plot.control
+ggsave("EE_Plot_02_Growth_profile_Control.png", plot = plot.control, dpi = 300, width = 13, height = 9)
+
+## H2O2
+plot.H2O2 <- ggplot(data.H2O2, aes(x = cumulative_time, y = Cellular_concentration)) +
+  geom_line() + 
+  geom_hline(yintercept = 1e6,linetype='dotted', col = 'red')+
+  geom_hline(yintercept = 1e5,linetype='dotted', col = 'blue') +
+  geom_hline(yintercept = 1e7,linetype='dotted', col = 'orange') +
+  scale_y_log10(labels = scientific) +
+  scale_x_continuous(limits = c(0,1000), breaks = seq(0,1000,48)) +
+  geom_point(aes(x = cumulative_time, y = Cellular_concentration,color = Cuantification))+
+  facet_grid(Rep~.) +
+  theme_classic()+
+  labs(y = "cells/mL", x = "Time (h)") + 
+  theme(legend.position = "none",
+        strip.text = element_text(face = "bold", size=15),
+        strip.background = element_rect(colour="black",
+                                        fill="ivory"),
+        axis.title.x = element_text(face = "bold",
+                                    size = 18),
+        axis.title.y = element_text(face = "bold",
+                                    size = 18),
+        axis.text.x = element_text(face = "bold",
+                                   size = 14),
+        axis.text.y = element_text(face = "bold",
+                                   size = 14))
+plot.H2O2
+ggsave("EE_Plot_03_Growth_profile_H2O2.png", plot = plot.H2O2, dpi = 300, width = 13, height = 9)
 
 
 

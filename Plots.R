@@ -165,11 +165,34 @@ ggsave("EE_Plot_03_Growth_profile_H2O2.png", plot = plot.H2O2, dpi = 300, width 
 
 
 
+## trying to add a figure that indicates the magnitud of the shock
+data.control.temp <- data.control
+data.control.temp$H2O2 <- gsub('[a-zA-Z /]','', data.control.temp$H2O2)
+data.control.temp$H2O2 <-as.numeric(data.control.temp$H2O2)
 
+plot.control.temp <- ggplot(data.control.temp, aes(x = cumulative_time, y = Cellular_concentration)) +
+  geom_line() + 
+  geom_hline(yintercept = 1e6,linetype='dotted', col = 'red')+
+  geom_hline(yintercept = 1e5,linetype='dotted', col = 'blue') +
+  geom_hline(yintercept = 1e7,linetype='dotted', col = 'orange') +
+  scale_y_log10(labels = scientific) +
+  scale_x_continuous(limits = c(0,1000), breaks = seq(0,1000,48)) +
+  geom_point(aes(x = cumulative_time, y = Cellular_concentration,color = Cuantification))+
+  facet_grid(Rep~.) +
+  theme_classic()+
+  labs(y = "cells/mL", x = "Time (h)") + 
+  theme(legend.position = "none",
+        strip.text = element_text(face = "bold", size=15),
+        strip.background = element_rect(colour="black",
+                                        fill="ivory"),
+        axis.title.x = element_text(face = "bold",
+                                    size = 18),
+        axis.title.y = element_text(face = "bold",
+                                    size = 18),
+        axis.text.x = element_text(face = "bold",
+                                   size = 14),
+        axis.text.y = element_text(face = "bold",
+                                   size = 14))
+plot.control.temp
 
-
-
-
-
-
-
+rm(list = ls())

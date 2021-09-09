@@ -22,44 +22,52 @@ USMA_EE_2021 <- read_xlsx("2021_EE_Growth_data_DF.xlsx",
                           range = "EE_Dataframe!A1:M376") # works
 
 # Plot: growth profile with the bottlenecks
-data <- USMA_EE_2021[,c(1:5,8,9)]
-data <- data[grep("Yes", data$Selected),]
+data <- USMA_EE_2021[grep("Yes", USMA_EE_2021$Selected),]
+data <- data[,c(1:5,9)]
+data$Rep <- paste("Lineage ",data$Rep, sep = "") # works
 
 data <- data %>% 
   pivot_longer(cols = c(CFU_mL,cells_mL ),
                names_to = "Cuantification",
                values_to = c("Cellular_concentration")) # works
 
+df.3.temp <- data.frame(Condition = c(rep("Control",60),
+                                      rep("H2O2",60)),
+                        TreatmentNum = seq(1,20,1),
+                        H2O2 = c(rep("w/o ROS 0 mM",60),
+                                 rep("5 mM",2),rep("8 mM",2),rep("11 mM",2),rep("14 mM",2),
+                                 rep("17 mM",2),rep("20 mM",2),rep("30 mM",2),rep("40 mM",2),
+                                 rep("50 mM",2),rep("60 mM",2),rep("5 mM",2),rep("8 mM",2),
+                                 rep("11 mM",2),rep("14 mM",2),rep("17 mM",2),rep("20 mM",2),
+                                 rep("30 mM",2),rep("40 mM",2),rep("50 mM",2),rep("60 mM",2),
+                                 rep("5 mM",2),rep("8 mM",2),rep("11 mM",2),rep("14 mM",2),
+                                 rep("17 mM",2),rep("20 mM",2),rep("30 mM",2),rep("40 mM",2),
+                                 rep("50 mM",2),rep("60 mM",2)),
+                        Rep = c(rep("Lineage D", 20),
+                                rep("Lineage E", 20),
+                                rep("Lineage F", 20),
+                                rep("Lineage A", 20),
+                                rep("Lineage B", 20),
+                                rep("Lineage C", 20)),
+                        Cuantification = rep("cells_i",120),
+                        Cellular_concentration = rep(1e6,120)) # works
+
+df.3.temp$TreatmentNum <- sprintf("%02d", as.numeric(df.3.temp$TreatmentNum)) # works
+df.3.temp$TreatmentNum <- paste("Treatment ", df.3.temp$TreatmentNum, sep ="") # works
+
+data <- bind_rows(df.3.temp,data) # works
+rm(list = ls(pattern = ".temp"))
 data <- data %>% 
   mutate(Time = case_when(
-    startsWith(Cuantification, "CFU") ~ "3",
-    startsWith(Cuantification, "cells") ~ "45")) # works
-df.temp <- data.frame(Condition = c(rep("Control",3),rep("H2O2",3)),
-                      TreatmentNum = c("Treatment 01","Treatment 01"),
-                      H2O2 = c(rep("w/o ROS 0 mM",3), rep("5 mM",3)),
-                      Selected = c("Yes","Yes"),
-                      Rep = c(rep("D",1), rep("E",1),rep("F",1),
-                              rep("A",1), rep("B",1),rep("C",1)),
-                      Cuantification = c("cells_mL"),
-                      Cellular_concentration = c(1000000),
-                      Time = c(rep("1",6))) # works
-
-data <- bind_rows(df.temp,data)
+    endsWith(Cuantification, "_i") ~ "1",
+    startsWith(Cuantification, "CFU_mL") ~ "3",
+    startsWith(Cuantification, "cells_mL") ~ "45")) # works
 
 data <- data %>% 
   arrange(TreatmentNum) %>% 
   group_by(Rep) %>% 
   mutate(cumulative_time = cumsum(Time)) # works
-data$Rep <- paste("Lineage ",data$Rep, sep = "") # works
-data$Rep <- factor(data$Rep, levels = c("Lineage A","Lineage B","Lineage C",
-                                        "Lineage D","Lineage E","Lineage F")) #works
-data$facet_fill_color <- c("blue","orange")[as.factor(data$Condition)] # works
-# data.a <- data[grep("A",data$Rep),] # only to see one lineage
-## temporal df
-df.2.temp <- data.frame(Condition = c(rep("Control",20),rep("H2O2",20)),
-                        #TreatmentNum = c(paste(rep("Treatment 0",42), seq(0,20,1), sep ="")),
-                        Time = c(rep(seq(1,913,48),2)),
-                        Cellular_concentration = c(1000000))
+
 
 scientific <- function(x){
   ifelse(x==0, "0", 
@@ -67,20 +75,22 @@ scientific <- function(x){
 } # works
 
 plot.1 <- ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
-  geom_line() + 
-  geom_hline(yintercept = 1e6,linetype='dotted', col = 'red')+
-  geom_hline(yintercept = 1e5,linetype='dotted', col = 'blue') +
-  geom_hline(yintercept = 1e7,linetype='dotted', col = 'orange') +
+  geom_line(aes(color = Condition)) + 
+  geom_hline(yintercept = 1e6,linetype='dotted', col = 'gray') +
+  geom_hline(yintercept = 1e5,linetype='dotted', col = 'gray') +
+  geom_hline(yintercept = 1e7,linetype='dotted', col = 'gray') +
   scale_y_log10(labels = scientific) +
-  scale_x_continuous(limits = c(0,970), breaks = seq(0,970,48)) +
-  geom_point(data = data, aes(x = cumulative_time, y = Cellular_concentration,color = Cuantification))+
+  scale_x_continuous(limits = c(0,990), breaks = seq(0,990,48))+
+  geom_point(data = data, aes(x = cumulative_time,
+                              y = Cellular_concentration,
+                              color = Cuantification, 
+                              shape = Condition))+
   facet_grid(Rep~.) +
-  geom_point(data = df.2.temp, aes(x = Time, y = Cellular_concentration))+
   labs(y = "cells/mL", x = "Time (h)") + 
   theme_classic() +
   theme(legend.position = "none",
         strip.text = element_text(face = "bold", size=15),
-        strip.background = element_rect(colour="black",fill="ivory"),
+        strip.background = element_rect(colour="black",fill="green3"),
         axis.title.x = element_text(face = "bold",
                                     size = 18),
         axis.title.y = element_text(face = "bold",
@@ -90,8 +100,8 @@ plot.1 <- ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
         axis.text.y = element_text(face = "bold",
                                    size = 14)) #works
 
+
 plot.1 #works
-rm(list = ls(pattern = ".temp"))
 
 ggsave("EE_Plot_01_Growth_profile.png", plot = plot.1, dpi = 300, width = 13, height = 9)
 
@@ -125,59 +135,6 @@ plot.control <- ggplot(data.control, aes(x = cumulative_time, y = Cellular_conce
         axis.text.y = element_text(face = "bold",
                                    size = 14))
 plot.control
-
-
-
-#########
-dat <- mtcars
-## Add in some colors based on the data
-dat$facet_fill_color <- c("red", "green", "blue", "yellow", "orange")[dat$gear]
-## Create main plot
-
-p <- ggplot(dat, aes(x=cyl, y=wt)) + 
-  geom_point(aes(fill=hp)) + facet_grid(gear+carb ~ .) +
-  theme(strip.background=element_blank())
-p
-dummy <- p
-
-dummy <- plot.1
-dummy$layers <- NULL
-dummy <- dummy + geom_rect(data=data, xmin=-Inf, ymin=-Inf, xmax=Inf, ymax=Inf,
-                           aes(fill = facet_fill_color))
-
-g1 <- ggplotGrob(plot.1)
-g2 <- ggplotGrob(dummy)
-
-gtable_select <- function (x, ...) 
-{
-  matches <- c(...)
-  x$layout <- x$layout[matches, , drop = FALSE]
-  x$grobs <- x$grobs[matches]
-  x
-}
-
-panels <- grepl(pattern="panel", g2$layout$name)
-strips <- grepl(pattern="strip-right", g2$layout$name)
-g2$grobs[strips] <- replicate(sum(strips), nullGrob(), simplify = FALSE)
-g2$layout$l[panels] <- g2$layout$l[panels] + 1
-g2$layout$r[panels] <- g2$layout$r[panels] + 2
-
-new_strips <- gtable_select(g2, panels | strips)
-grid.newpage()
-grid.draw(new_strips)
-
-gtable_stack <- function(g1, g2){
-  g1$grobs <- c(g1$grobs, g2$grobs)
-  g1$layout <- rbind(g1$layout, g2$layout)
-  g1
-}
-## ideally you'd remove the old strips, for now they're just covered
-new_plot <- gtable_stack(g1, new_strips)
-grid.newpage()
-grid.draw(new_plot)
-
-
-
 
 
 

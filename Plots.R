@@ -199,9 +199,22 @@ plot.control.temp
 plot_ly(data, x = ~cumulative_time, 
         y = ~Cellular_concentration, 
         type = 'scatter',
-        mode = 'markers',
-        name = 'H2O2',
-        marker = list(color = "pink"))
+        mode = 'lines+markers',
+        color = ~Condition)%>% 
+  layout(title = "Growth ",
+         xaxis = list(title = "Time (h)"),
+         yaxis = list(title = "cells/mL"))
 
+data %>% 
+  group_by(Rep) %>% 
+  do(p=plot_ly(., x = ~cumulative_time,
+               y = ~Cellular_concentration,
+               color = ~Rep,
+               type = 'scatter',
+               mode = 'lines+markers'))  %>% 
+  subplot(nrows = 6, shareX = T) %>% 
+  layout(title = "Growth ",
+         xaxis = list(title = "Time (h)"),
+         yaxis = list(title = "cells/mL"))
 
 rm(list = ls())

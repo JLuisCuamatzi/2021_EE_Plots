@@ -195,4 +195,13 @@ plot.control.temp <- ggplot(data.control.temp, aes(x = cumulative_time, y = Cell
                                    size = 14))
 plot.control.temp
 
+## 2021-09-09
+plot_ly(data, x = ~cumulative_time, 
+        y = ~Cellular_concentration, 
+        type = 'scatter',
+        mode = 'markers',
+        name = 'H2O2',
+        marker = list(color = "pink"))
+
+
 rm(list = ls())

@@ -16,18 +16,20 @@ library(viridis, warn.conflicts = F)
 library(lemon, warn.conflicts = F)
 library(gtable, warn.conflicts = F)
 library(grid, warn.conflicts = F)
-
+#getwd()
 # reading the dataframe
 USMA_EE_2021 <- read_xlsx("2021_EE_Growth_data_DF.xlsx",
-                          range = "EE_Dataframe!A1:M376") # works
+                          range = "EE_Dataframe!A1:N376") # works
 
 # Plot: growth profile with the bottlenecks
 data <- USMA_EE_2021[grep("Yes", USMA_EE_2021$Selected),]
-data <- data[,c(1:5,9)]
+#data <- data[,c(1:5,9)] #cfu/ml
+data <- data[,c(1:3,5,6,10)] #cfu
 data$Rep <- paste("Lineage ",data$Rep, sep = "") # works
 
 data <- data %>% 
-  pivot_longer(cols = c(CFU_mL,cells_mL ),
+  #pivot_longer(cols = c(CFU_mL, cells_mL ), #cfu/mL
+  pivot_longer(cols = c(CFU, cells_mL ),#cfu/mL
                names_to = "Cuantification",
                values_to = c("Cellular_concentration")) # works
 
@@ -60,7 +62,8 @@ rm(list = ls(pattern = ".temp"))
 data <- data %>% 
   mutate(Time = case_when(
     endsWith(Cuantification, "_i") ~ "1",
-    startsWith(Cuantification, "CFU_mL") ~ "3",
+    #startsWith(Cuantification, "CFU_mL") ~ "3", #cfu/mL
+    startsWith(Cuantification, "CFU") ~ "3", #cfu
     startsWith(Cuantification, "cells_mL") ~ "45")) # works
 
 data <- data %>% 
@@ -78,7 +81,10 @@ plot.1 <- ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
   geom_line(aes(color = Condition)) + 
   geom_hline(yintercept = 1e6,linetype='dotted', col = 'gray') +
   geom_hline(yintercept = 1e5,linetype='dotted', col = 'gray') +
-  geom_hline(yintercept = 1e7,linetype='dotted', col = 'gray') +
+  geom_hline(yintercept = 1e7,linetype='dotted', col = 'blue') +
+  geom_hline(yintercept = 1e4,linetype='dotted', col = 'blue') +
+  geom_hline(yintercept = 1e3,linetype='dotted', col = 'red') +
+  geom_hline(yintercept = 1e8,linetype='dotted', col = 'red') +
   scale_y_log10(labels = scientific) +
   scale_x_continuous(limits = c(0,990), breaks = seq(0,990,48))+
   geom_point(data = data, aes(x = cumulative_time,
@@ -103,7 +109,7 @@ plot.1 <- ggplot(data, aes(x = cumulative_time, y = Cellular_concentration)) +
 
 plot.1 #works
 
-ggsave("EE_Plot_01_Growth_profile.png", plot = plot.1, dpi = 300, width = 13, height = 9)
+ggsave(paste(Sys.Date(),"EE_Plot_01_Growth_profile.png", sep = "_"), plot = plot.1, dpi = 300, width = 13, height = 9)
 
 ## Now, do plots for each evolutionary group (Control and H2O2)
 
